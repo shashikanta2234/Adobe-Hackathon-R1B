@@ -99,8 +99,6 @@ A single `output.json` containing:
 
 - Total processing time for 3–5 PDFs: under 60 seconds (typical).
 - Model auto-downloads during Docker build; runs 100% offline.
-- Easy to extend for multilingual use (swap in a multilingual MiniLM model if allowed).
-- For any issues, check container logs or `output/` for error messages.
 
 ---
 
