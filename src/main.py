@@ -13,7 +13,7 @@ def load_persona_job(persona_path, job_path):
     return persona, job
 
 def process_collection(input_dir, output_dir, persona_str, job_str, model):
-    # 1. List PDFs
+    # List PDFs
     pdf_files = [f for f in os.listdir(input_dir) if f.lower().endswith(".pdf")]
     doc_sections = []
     section_texts = []
@@ -28,14 +28,14 @@ def process_collection(input_dir, output_dir, persona_str, job_str, model):
                 "full_text": s['text'],
             })
             section_texts.append(s['title'] + "\n" + s['text'])
-    # 2. Embed
+    # Embedding
     all_sections_emb = embed_text(section_texts, model)
     query = persona_str + "\n" + job_str
     query_emb = embed_text([query], model)[0]
-    # 3. Similarity & rankings
+    # Similarity & rankings
     sims = [cosine_similarity(query_emb, emb) for emb in all_sections_emb]
     ranked = sorted(zip(doc_sections, sims), key=lambda x: x[1], reverse=True)
-    # 4. Output build (top 5)
+    # Output build (top 5)
     output = {
         "metadata": {
             "input_documents": pdf_files,
@@ -58,9 +58,9 @@ def process_collection(input_dir, output_dir, persona_str, job_str, model):
             "document": sec['document'],
             "page_number": sec['page_number'],
             "section_title": sec['section_title'],
-            "refined_text": sec['full_text'][:400]  # Snippet
+            "refined_text": sec['full_text'][:400]
         })
-    # 5. Save output
+    # Save output
     with open(os.path.join(output_dir, "output.json"), "w") as f:
         json.dump(output, f, indent=2)
 
@@ -68,5 +68,4 @@ if __name__ == "__main__":
     persona, job = load_persona_job("/app/input/persona.txt", "/app/input/job.txt")
     model = load_embedding_model("./src/embedding_model/")
     process_collection(PDF_PATH, OUTPUT_PATH, persona, job, model)
-    print(f"Processing complete. Output saved to {OUTPUT_PATH}/output.json")
-    sys.exit(0)
+    print(f"Processing complete. Output saved to {OUTPUT_PATH}/challenge1b_output.json")
